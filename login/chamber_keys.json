@@ -1,0 +1,8 @@
+{
+  "sandbox": {
+    "endpoint": "https://broker-api.sandbox.alpaca.markets",
+    "key": "CKOD8Z7EMWC5AN0MXX4D",
+    "secret": "znNjh5c0kaltPbNdVXdboknrQpIdKCH1UNYBmRTd"
+  }
+}
+
