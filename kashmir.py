@@ -1,33 +1,65 @@
 import json
 
 import click
-import requests
-from requests.auth import HTTPBasicAuth
+from alpaca.data import CryptoBarsRequest, TimeFrame
 
-from utils import paths
+from alpaca.trading import TradingClient, MarketOrderRequest, OrderSide, TimeInForce
+from alpaca.data.historical import CryptoHistoricalDataClient
 
+from login.keys_to_the_kingdom import keys
 
-# chamber_keys.json
+key_chain = keys()['paper']
+
 
 @click.group()
-def cli():
+def kash():
     pass
 
 
-@cli.command()
-def sheba():
-    click.echo("I will rule the world!!!")
-    pass
-
-@cli.command()
-def look_at_assets():
-    key_chain = keys()['sandbox']
-    hidden_key = HTTPBasicAuth(key_chain['key'], key_chain['secret'])
-    response = requests.get(key_chain['endpoint'] + "/v1/assets", auth=hidden_key).json()
-    pass
+@kash.command()
+def look_at_account():
+    trading_client = TradingClient(key_chain["key"], key_chain["secret"], paper=True)
+    account = trading_client.get_account()
+    for property_name, value in account:
+        click.echo(f"\"{property_name}\": {value}")
 
 
-def keys():
-    f = open(paths.get_path('login/chamber_keys.json'))
-    keys = json.load(f)
-    return keys
+@kash.command()
+def buy():
+    trading_client = TradingClient(key_chain["key"], key_chain["secret"], paper=True)
+    market_order_data = MarketOrderRequest(
+        symbol="BTC/USD",
+        qty=.0001,
+        side=OrderSide.BUY,
+        time_in_force=TimeInForce.GTC
+    )
+
+    market_order = trading_client.submit_order(market_order_data)
+    order_obj = json.loads(market_order.json())
+    for property_name, value in market_order:
+        print(f"\"{property_name}\": {value}")
+
+
+@kash.command()
+def my_pos():
+    trading_client = TradingClient(key_chain["key"], key_chain["secret"], paper=True)
+    positions = trading_client.get_all_positions()
+    for position in positions:
+        for property_name, value in position:
+            print(f"\"{property_name}\": {value}")
+
+
+@kash.command()
+def hist():
+    # No keys required for crypto data
+    client = CryptoHistoricalDataClient()
+    request_params = CryptoBarsRequest(
+        symbol_or_symbols=["BTC/USD"],
+        timeframe=TimeFrame.Day,
+        start="2022-09-01 00:00:00",
+        end="2022-09-07 00:00:00"
+    )
+    btc_bars = client.get_crypto_bars(request_params)
+    order_obj = json.loads(btc_bars.json())
+    # Convert to dataframe
+    print(btc_bars.df)

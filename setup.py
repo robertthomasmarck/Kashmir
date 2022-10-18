@@ -8,11 +8,12 @@ setup(
     install_requires=[
         'Click',
         'requests',
-        'pytest'
+        'pytest',
+        'alpaca-py'
     ],
     entry_points={
         'console_scripts': [
-            'kashmir = kashmir:cli',
+            'kashmir = kashmir:kash',
         ],
     },
 )

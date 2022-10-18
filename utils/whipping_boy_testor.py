@@ -1,7 +1,7 @@
 from click.testing import CliRunner
-from kashmir import cli
+from kashmir import kash
 
 
 def test_sync():
   runner = CliRunner()
-  runner.invoke(cli, ['look-at-assets'])
+  runner.invoke(kash, ['hist'])

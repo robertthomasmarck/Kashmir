@@ -6,6 +6,7 @@ kashmir.egg-info/entry_points.txt
 kashmir.egg-info/requires.txt
 kashmir.egg-info/top_level.txt
 login/__init__.py
+login/keys_to_the_kingdom.py
 utils/__init__.py
 utils/paths.py
 utils/whipping_boy_testor.py
