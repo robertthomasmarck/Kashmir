@@ -7,6 +7,7 @@ from alpaca.trading import TradingClient, MarketOrderRequest, OrderSide, TimeInF
 from alpaca.data.historical import CryptoHistoricalDataClient
 
 from login.keys_to_the_kingdom import keys
+from utils.custom_types import TIMEFRAME as timeframe
 
 key_chain = keys()['paper']
 
@@ -49,13 +50,17 @@ def my_pos():
             print(f"\"{property_name}\": {value}")
 
 
+
+
+
 @kash.command()
-def hist():
-    # No keys required for crypto data
+@click.option('-symb', '--symbol', type=str, default='BTC/USD')
+@click.option('-tf', '--time-frame', type=timeframe, default='Day')
+def hist(symbol, time_frame):
     client = CryptoHistoricalDataClient()
     request_params = CryptoBarsRequest(
-        symbol_or_symbols=["BTC/USD"],
-        timeframe=TimeFrame.Day,
+        symbol_or_symbols=[symbol],
+        timeframe=time_frame,
         start="2022-09-01 00:00:00",
         end="2022-09-07 00:00:00"
     )
@@ -63,3 +68,8 @@ def hist():
     order_obj = json.loads(btc_bars.json())
     # Convert to dataframe
     print(btc_bars.df)
+
+
+
+
+
