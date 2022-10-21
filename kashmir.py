@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 import click
 from alpaca.data import CryptoBarsRequest, TimeFrame
@@ -50,26 +51,64 @@ def my_pos():
             print(f"\"{property_name}\": {value}")
 
 
-
-
-
 @kash.command()
 @click.option('-symb', '--symbol', type=str, default='BTC/USD')
 @click.option('-tf', '--time-frame', type=timeframe, default='Day')
-def hist(symbol, time_frame):
+@click.option('-s', '--start', type=click.DateTime(formats=['%m-%d-%Y']), required=True)
+@click.option('-e', '--end', type=click.DateTime(formats=['%m-%d-%Y']), required=True)
+def hist(symbol, time_frame, start, end):
     client = CryptoHistoricalDataClient()
     request_params = CryptoBarsRequest(
         symbol_or_symbols=[symbol],
         timeframe=time_frame,
-        start="2022-09-01 00:00:00",
-        end="2022-09-07 00:00:00"
+        start=f"{start}",
+        end=f"{end}"
     )
     btc_bars = client.get_crypto_bars(request_params)
     order_obj = json.loads(btc_bars.json())
-    # Convert to dataframe
+
     print(btc_bars.df)
 
 
+def test_thing():
+    f = json.load(open("test_data.json"))["BTC/USD"]
+    for b in f:
+        what_scen(b)
 
 
+def what_scen(candle):
+    hi = candle["high"]
+    lo = candle["low"]
+    opn = candle["open"]
+    cls = candle["close"]
+    change = cls - opn
+    spike = hi - max(opn, cls)
+    drop = min(opn, cls) - lo
+    if opn == lo and cls == hi and bull(opn, cls):
+        scen = ("BULL", 1)
+    elif opn > lo and cls == hi and bull(opn, cls):
+        scen = ("BULL", 2)
+    elif opn > lo and cls < hi and bull(opn, cls):
+        scen = ("BULL", 3)
+    elif change < spike and change < drop and cls < hi and bull(opn, cls):
+        scen = ("BULL", 4)
+    elif opn == lo and change < spike and bull(opn, cls):
+        scen = ("BULL", 5)
+    elif opn == hi and cls == lo and bear(opn, cls):
+        scen = ('BEAR', 6)
+    elif opn == hi and cls == lo and bear(opn, cls):
+        scen = ('BEAR', 7)
+    elif opn < hi and cls > lo and bear(opn, cls):
+        scen = ("BULL", 8)
+    else:
+        scen = ("NOT LISTED", 0)
+    print(scen)
+    assert True
 
+
+def bull(o, c) -> bool:
+    return c > o
+
+
+def bear(o, c) -> bool:
+    return c < o

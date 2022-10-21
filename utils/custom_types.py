@@ -13,9 +13,9 @@ class TimeFrameParamType(click.ParamType):
                 return TimeFrame.Day
             elif value == "Week":
                 return TimeFrame.Week
-            elif value == "Month":
+            elif value in ["Month", "Mon"]:
                 return TimeFrame.Month
-            elif value == "Minute":
+            elif value in ["Minute", "Min"]:
                 return TimeFrame.Minute
             elif value == "Hour":
                 return TimeFrame.Hour
