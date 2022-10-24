@@ -70,40 +70,10 @@ def hist(symbol, time_frame, start, end):
     print(btc_bars.df)
 
 
-def test_thing():
-    f = json.load(open("test_data.json"))["BTC/USD"]
-    for b in f:
-        what_scen(b)
 
 
-def what_scen(candle):
-    hi = candle["high"]
-    lo = candle["low"]
-    opn = candle["open"]
-    cls = candle["close"]
-    change = cls - opn
-    spike = hi - max(opn, cls)
-    drop = min(opn, cls) - lo
-    if opn == lo and cls == hi and bull(opn, cls):
-        scen = ("BULL", 1)
-    elif opn > lo and cls == hi and bull(opn, cls):
-        scen = ("BULL", 2)
-    elif opn > lo and cls < hi and bull(opn, cls):
-        scen = ("BULL", 3)
-    elif change < spike and change < drop and cls < hi and bull(opn, cls):
-        scen = ("BULL", 4)
-    elif opn == lo and change < spike and bull(opn, cls):
-        scen = ("BULL", 5)
-    elif opn == hi and cls == lo and bear(opn, cls):
-        scen = ('BEAR', 6)
-    elif opn == hi and cls == lo and bear(opn, cls):
-        scen = ('BEAR', 7)
-    elif opn < hi and cls > lo and bear(opn, cls):
-        scen = ("BULL", 8)
-    else:
-        scen = ("NOT LISTED", 0)
-    print(scen)
-    assert True
+
+
 
 
 def bull(o, c) -> bool:
