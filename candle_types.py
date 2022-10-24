@@ -55,7 +55,7 @@ def get_candle_type(candle_dat) -> Candle:
         return Candle.FLAT_12
     elif change == 0 < spike and drop == 0:
         return Candle.FLAT_13
-    # OXs
+    # Bulls
     if span == change > 0:
         return Candle.OX_1
     elif spike == 0 < drop and change > 0:
@@ -79,12 +79,23 @@ def get_candle_type(candle_dat) -> Candle:
         return Candle.BEAR_10
 
 
+def make_scen_seq(file):
+    with open(file, 'r') as f:
+        data = json.load(f)
+    for symb, candles in data.items():
+        for candle in candles:
+            candle['type'] = get_candle_type(candle)
+        with open(file, "w") as g:
+            json.dump(data, g)
+
+
+
 def make_candle_seq(data):
     f = json.load(open(data))
     for val, key in f.items():
         for b in key:
             print(get_candle_type(b))
 
-        
+
 def test_this():
-    make_candle_seq("test_data.json")
+    make_scen_seq("test_data.json")
