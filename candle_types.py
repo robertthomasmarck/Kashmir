@@ -12,31 +12,31 @@ class Candle(Enum):
     4. Drop v Spike
     """
     # 1 is all change, no spike, no drop, most OXish
-    OX_1 = 1
+    OX_1 = 1, "OX"
     # 2 is change and a bigger drop, 2nd most OXish
-    OX_2 = 2
+    OX_2 = 2, "OX"
     # 3 is a big change, small drop, small spike, normal OXish
-    OX_3 = 3
+    OX_3 = 3, "OX"
     # 4 is a small change, big drop, small spike, neutral OXish
-    OX_4 = 4
+    OX_4 = 4, "OX"
     # 5 is a small change, no drop, big spike, least OXish
-    OX_5 = 5
+    OX_5 = 5, "OX"
     # 6 is all change, no spike, no drop, most bearish
-    BEAR_6 = 6
+    BEAR_6 = 6, "BEAR"
     # 7 is change and a bigger spike, 2nd most bearish
-    BEAR_7 = 7
+    BEAR_7 = 7, "BEAR"
     # 8 is big change, small drop, small spike, normal bearish
-    BEAR_8 = 8
+    BEAR_8 = 8, "BEAR"
     # 9 is small change, big spike, big drop, neutral bearish
-    BEAR_9 = 9
+    BEAR_9 = 9, "BEAR"
     # 10 is a small change, big drop, least bearish
-    BEAR_10 = 10
+    BEAR_10 = 10, "BEAR"
     # 11 is near 0 change, near 50/50 drop/spike, neutral
-    FLAT_11 = 11
+    FLAT_11 = 11, "FLAT"
     # 12 is near 0 change, near 100% spike, neutral
-    FLAT_12 = 12
+    FLAT_12 = 12, "FLAT"
     # 13 is near 0 change, near 100%, neutral
-    FLAT_13 = 13
+    FLAT_13 = 13, "FLAT"
 
 
 def get_candle_type(candle_dat) -> Candle:
@@ -50,52 +50,70 @@ def get_candle_type(candle_dat) -> Candle:
     drop = min(opn, cls) - lo
     # Neutrals
     if change == 0 and spike > 0 and drop > 0:
-        return Candle.FLAT_11
+        return Candle.FLAT_11.value
     elif change == 0 and spike == 0 < drop:
-        return Candle.FLAT_12
+        return Candle.FLAT_12.value
     elif change == 0 < spike and drop == 0:
-        return Candle.FLAT_13
+        return Candle.FLAT_13.value
     # Bulls
     if span == change > 0:
         return Candle.OX_1
     elif spike == 0 < drop and change > 0:
-        return Candle.OX_2
+        return Candle.OX_2.value
     elif spike + drop <= change > 0:
-        return Candle.OX_3
+        return Candle.OX_3.value
     elif spike + drop > change > 0:
-        return Candle.OX_4
+        return Candle.OX_4.value
     elif drop == 0 and spike > 0 and change > 0:
-        return Candle.OX_5
+        return Candle.OX_5.value
     # Bears
     elif span == change < 0:
-        return Candle.BEAR_6
+        return Candle.BEAR_6.value
     elif drop == 0 < spike and change < 0:
-        return Candle.BEAR_7
+        return Candle.BEAR_7.value
     elif spike + drop <= abs(change) and change < 0:
-        return Candle.BEAR_8
+        return Candle.BEAR_8.value
     elif spike + drop > abs(change) and change < 0:
-        return Candle.BEAR_9
+        return Candle.BEAR_9.value
     elif drop == 0 < spike and change < 0:
-        return Candle.BEAR_10
+        return Candle.BEAR_10.value
 
 
-def make_scen_seq(file):
+def write_type_to_history(file):
     with open(file, 'r') as f:
         data = json.load(f)
     for symb, candles in data.items():
         for candle in candles:
-            candle['type'] = get_candle_type(candle)
+            add_candle_type(candle)
         with open(file, "w") as g:
-            json.dump(data, g)
+            json.dump(candles, g, indent=2)
 
-
+def add_candle_type(candle):
+    type = get_candle_type(candle)
+    candle['type'] = type
+    return candle
 
 def make_candle_seq(data):
     f = json.load(open(data))
     for val, key in f.items():
-        for b in key:
-            print(get_candle_type(b))
+        for c in key:
+            print(get_candle_type(c))
 
 
-def test_this():
-    make_scen_seq("test_data.json")
+test_candle = {
+    "symbol": "BTC/USD",
+    "timestamp": "2021-09-01T05:00:00+00:00",
+    "open": 47128.0,
+    "high": 49910.0,
+    "low": 47124.0,
+    "close": 49420.0,
+    "volume": 970.77,
+    "trade_count": 6375.0,
+    "vwap": 48282.504172152
+  }
+
+def test_thing():
+    add_candle_type(test_candle)
+
+
+

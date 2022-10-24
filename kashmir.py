@@ -7,7 +7,9 @@ from alpaca.data import CryptoBarsRequest, TimeFrame
 from alpaca.trading import TradingClient, MarketOrderRequest, OrderSide, TimeInForce
 from alpaca.data.historical import CryptoHistoricalDataClient
 
+from candle_types import write_type_to_history, add_candle_type
 from login.keys_to_the_kingdom import keys
+from utils import paths
 from utils.custom_types import TIMEFRAME as timeframe
 
 key_chain = keys()['paper']
@@ -52,11 +54,13 @@ def my_pos():
 
 
 @kash.command()
+@click.option('-w', '--write', is_flag=True, default=False, help='Do you want to store the history?')
 @click.option('-symb', '--symbol', type=str, default='BTC/USD')
 @click.option('-tf', '--time-frame', type=timeframe, default='Day')
 @click.option('-s', '--start', type=click.DateTime(formats=['%m-%d-%Y']), required=True)
 @click.option('-e', '--end', type=click.DateTime(formats=['%m-%d-%Y']), required=True)
-def hist(symbol, time_frame, start, end):
+def hist(write, symbol, time_frame, start, end):
+    # Todo: Figure out the timezone thing
     client = CryptoHistoricalDataClient()
     request_params = CryptoBarsRequest(
         symbol_or_symbols=[symbol],
@@ -65,9 +69,26 @@ def hist(symbol, time_frame, start, end):
         end=f"{end}"
     )
     btc_bars = client.get_crypto_bars(request_params)
-    order_obj = json.loads(btc_bars.json())
+    order_obj = json.loads(btc_bars.json())['data']
+    # Writing to sample.json
+    if write:
+        for candle in order_obj[symbol]:
+            add_candle_type(candle)
+        filename = f"{symbol.replace('/', '')}-{time_frame}-{start.strftime('%m%d%Y')}-{end.strftime('%m%d%Y')}.json"
+        path = paths.get_path(f"histories\\{filename}")
+        with open(path, "w") as outfile:
+            write_obj = json.dumps(order_obj, indent=2)
+            print(write_obj)
+            click.echo(f"Writing file to histories: {filename}")
+            outfile.write(write_obj)
+            print(btc_bars.df)
+    else:
+        btc_bars.df
 
-    print(btc_bars.df)
+@kash.command()
+@click.option('-f', '--file', type=str, required=True)
+def add_type(file):
+    write_type_to_history(file)
 
 
 
