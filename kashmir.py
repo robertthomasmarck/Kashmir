@@ -1,34 +1,20 @@
 import json
-from datetime import datetime
 
 import click
-from alpaca.data import CryptoBarsRequest, TimeFrame
+from alpaca.data import CryptoBarsRequest
 
 from alpaca.trading import TradingClient, MarketOrderRequest, OrderSide, TimeInForce
 from alpaca.data.historical import CryptoHistoricalDataClient
 
-from candle_types import write_type_to_history, add_candle_type
-from login.keys_to_the_kingdom import keys
 from utils import paths
 from utils.custom_types import TIMEFRAME as timeframe
 
-key_chain = keys()['paper']
 
 
-@click.group()
-def kash():
-    pass
 
 
-@kash.command()
-def look_at_account():
-    trading_client = TradingClient(key_chain["key"], key_chain["secret"], paper=True)
-    account = trading_client.get_account()
-    for property_name, value in account:
-        click.echo(f"\"{property_name}\": {value}")
 
 
-@kash.command()
 def buy():
     trading_client = TradingClient(key_chain["key"], key_chain["secret"], paper=True)
     market_order_data = MarketOrderRequest(
@@ -90,16 +76,3 @@ def hist(write, symbol, time_frame, start, end):
 def add_type(file):
     write_type_to_history(file)
 
-
-
-
-
-
-
-
-def bull(o, c) -> bool:
-    return c > o
-
-
-def bear(o, c) -> bool:
-    return c < o

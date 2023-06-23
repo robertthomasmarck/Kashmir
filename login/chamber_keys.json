@@ -1,13 +1,14 @@
 {
   "paper": {
     "endpoint": "https://paper-api.alpaca.markets",
-    "key": "PKKSJ6ASAL1JUIL5POEH",
-    "secret": "MmHuTds0gF0uo6g8cjt1HEzahIZtoBROoVaYO8pk"
+    "teeth": {"api_key": "PKKSJ6ASAL1JUIL5POEH",
+    "secret_key": "MmHuTds0gF0uo6g8cjt1HEzahIZtoBROoVaYO8pk",
+    "paper": true}
   },
   "history": {
     "endpoint": "https://data.alpaca.markets/v2",
-    "key": "PKKSJ6ASAL1JUIL5POEH",
-    "secret": "MmHuTds0gF0uo6g8cjt1HEzahIZtoBROoVaYO8pk"
+    "teeth": {"api_key": "PKKSJ6ASAL1JUIL5POEH",
+    "secret_key": "MmHuTds0gF0uo6g8cjt1HEzahIZtoBROoVaYO8pk"}
   }
 }
 
